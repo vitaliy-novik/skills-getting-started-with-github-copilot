@@ -13,16 +13,28 @@ def setup_function():
 
 
 def test_unregister_participant_removes_email():
-    response = client.delete("/activities/Chess Club/participants/michael@mergington.edu")
+    # Arrange
+    activity_name = "Chess Club"
+    email = "michael@mergington.edu"
 
+    # Act
+    response = client.delete(f"/activities/{activity_name}/participants/{email}")
+
+    # Assert
     assert response.status_code == 200
-    assert response.json()["message"] == "Unregistered michael@mergington.edu from Chess Club"
+    assert response.json()["message"] == f"Unregistered {email} from {activity_name}"
 
     activities = client.get("/activities").json()
-    assert "michael@mergington.edu" not in activities["Chess Club"]["participants"]
+    assert email not in activities[activity_name]["participants"]
 
 
 def test_unregister_participant_returns_404_for_missing_participant():
-    response = client.delete("/activities/Chess Club/participants/not-found@example.com")
+    # Arrange
+    activity_name = "Chess Club"
+    email = "not-found@example.com"
 
+    # Act
+    response = client.delete(f"/activities/{activity_name}/participants/{email}")
+
+    # Assert
     assert response.status_code == 404
